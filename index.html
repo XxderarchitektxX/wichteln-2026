@@ -100,11 +100,32 @@ body {
   cursor: pointer;
   box-shadow: 0 2px 0 var(--papier-falz), 0 8px 18px rgba(0, 0, 0, 0.28);
   transition: transform 0.15s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 .schild:nth-child(3n + 1) { transform: rotate(-1.2deg); }
 .schild:nth-child(3n + 2) { transform: rotate(0.8deg); }
 .schild:nth-child(3n) { transform: rotate(-0.4deg); }
 .schild:hover, .schild:active { transform: rotate(0deg) translateY(-2px); }
+.schild .schild-name { display: block; }
+.schild .schild-stand {
+  display: block;
+  font-family: var(--schrift-text);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.schild:disabled, .schild:disabled:hover {
+  transform: none;
+  cursor: default;
+  background: transparent;
+  color: var(--nebel);
+  box-shadow: inset 0 0 0 1.5px rgba(180, 200, 191, 0.45);
+}
+.schild:disabled .schild-name { text-decoration: line-through; text-decoration-thickness: 2px; }
 
 /* Knöpfe */
 .knoepfe { display: flex; flex-direction: column; gap: 0.75rem; }
@@ -148,7 +169,16 @@ body {
   to { transform: translateY(-64px) rotate(-6deg) scale(1.25); }
 }
 
-/* Der Zettel */
+/* Die Zettel */
+.zettel-liste { display: flex; flex-direction: column; gap: 1.5rem; }
+.eintrag { display: flex; flex-direction: column; gap: 0.5rem; }
+.eintrag-wer {
+  margin: 0;
+  font-family: var(--schrift-text);
+  font-size: 1.0625rem;
+  font-weight: 600;
+  color: var(--papier);
+}
 .zettel {
   display: block;
   width: 100%;
@@ -182,11 +212,12 @@ body {
   background: var(--papier);
   box-shadow: 0 2px 0 var(--papier-falz), 0 14px 30px rgba(0, 0, 0, 0.35);
 }
+.zettel-liste.mehrere .zettel-seite { min-height: 8.5rem; }
 .zettel-zu {
   background-image: linear-gradient(to bottom, transparent calc(50% - 1px), var(--papier-falz) calc(50% - 1px), var(--papier-falz) calc(50% + 1px), transparent calc(50% + 1px));
 }
 .zettel-auf { transform: rotateX(180deg); }
-.zettel-hinweis { font-size: 0.9375rem; font-weight: 600; letter-spacing: 0.02em; }
+.zettel-hinweis { font-size: 0.9375rem; font-weight: 600; letter-spacing: 0.02em; overflow-wrap: anywhere; }
 .zettel-klein { font-size: 0.875rem; color: #55635c; }
 .zettel-name {
   font-family: var(--schrift-hand);
@@ -196,6 +227,7 @@ body {
   overflow-wrap: anywhere;
   max-width: 100%;
 }
+.zettel-liste.mehrere .zettel-name { font-size: clamp(2.5rem, 13vw, 3.25rem); }
 
 .infos { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.4rem; }
 .infos li { display: flex; gap: 0.6rem; align-items: baseline; color: var(--papier); }
@@ -216,17 +248,20 @@ body {
     <span class="garn" aria-hidden="true"></span>
   </header>
 
-  <!-- 1: Wer bist du? -->
+  <!-- 1: Wer zieht? -->
   <section class="ansicht" id="ansicht-wahl" hidden>
-    <h2 tabindex="-1">Wer bist du?</h2>
+    <h2 tabindex="-1" id="wahl-frage">Wer bist du?</h2>
     <p id="einleitung">Tippe auf <strong>deinen eigenen</strong> Namen. Danach ziehst du einen Zettel aus dem Hut.</p>
     <div class="schilder" id="schilder"></div>
+    <div class="knoepfe" id="wahl-zurueck" hidden>
+      <button class="knopf knopf-still" id="knopf-zurueck" type="button">Zurück zu den Zetteln</button>
+    </div>
   </section>
 
   <!-- 2: Sicher? -->
   <section class="ansicht" id="ansicht-sicher" hidden>
     <h2 tabindex="-1" id="sicher-frage">Du bist …?</h2>
-    <p>Die Wahl gilt auf diesem Gerät fest. Wer einen fremden Namen antippt, sieht einen fremden Zettel und verdirbt die Überraschung.</p>
+    <p id="sicher-text"></p>
     <div class="knoepfe">
       <button class="knopf knopf-haupt" id="knopf-ja" type="button">Ja, das bin ich</button>
       <button class="knopf knopf-still" id="knopf-nein" type="button">Nein, zurück</button>
@@ -236,7 +271,7 @@ body {
   <!-- 3: Ziehen -->
   <section class="ansicht" id="ansicht-hut" hidden>
     <h2 tabindex="-1" id="hut-anrede">Greif in den Hut.</h2>
-    <p>Du ziehst genau einen Zettel. Dein eigener Name ist nicht dabei.</p>
+    <p>Ein Griff, ein Zettel. Der eigene Name ist nicht dabei.</p>
     <div class="hut-buehne" aria-hidden="true">
       <svg class="hut" id="hut" viewBox="0 0 240 170" xmlns="http://www.w3.org/2000/svg">
         <defs>
@@ -262,23 +297,16 @@ body {
     </div>
   </section>
 
-  <!-- 4: Dein Zettel -->
+  <!-- 4: Die Zettel auf diesem Gerät -->
   <section class="ansicht" id="ansicht-zettel" hidden>
-    <h2 tabindex="-1" id="zettel-anrede">Du beschenkst</h2>
-    <button class="zettel" id="zettel" type="button" aria-expanded="false">
-      <span class="zettel-innen">
-        <span class="zettel-seite zettel-zu">
-          <span class="zettel-hinweis">Dein Zettel</span>
-          <span class="zettel-klein">Tippen zum Aufklappen</span>
-        </span>
-        <span class="zettel-seite zettel-auf" id="zettel-auf" aria-hidden="true">
-          <span class="zettel-name" id="zettel-name"></span>
-          <span class="zettel-klein">Tippen zum Zuklappen</span>
-        </span>
-      </span>
-    </button>
+    <h2 tabindex="-1" id="zettel-titel">Gezogen auf diesem Gerät</h2>
+    <div class="zettel-liste" id="zettel-liste"></div>
     <ul class="infos" id="infos"></ul>
-    <p class="fussnote" id="merkhinweis">Dein Zettel bleibt auf diesem Gerät liegen. Öffnest du den Link wieder, findest du ihn hier. Nicht weitersagen.</p>
+    <div class="knoepfe" id="weiter-knoepfe">
+      <button class="knopf knopf-still" id="knopf-weiter" type="button">Für eine weitere Person ziehen</button>
+    </div>
+    <p class="fussnote" id="weiter-hinweis">Zum Beispiel für Kinder ohne eigenes Handy. Jeder Name kann auf diesem Gerät nur einmal ziehen.</p>
+    <p class="fussnote" id="merkhinweis"></p>
     <div class="knoepfe" id="probe-knoepfe" hidden>
       <button class="knopf knopf-still" id="knopf-neu" type="button">Beispiel von vorn beginnen</button>
     </div>
@@ -311,6 +339,7 @@ const DRAW = /*DRAW-START*/{"id":"01c171e439","demo":false,"title":"Wichteln 202
     zeige("leer");
     return;
   }
+  const ANZAHL = DRAW.people.length;
 
   /* Zettel entschlüsseln: der Name steht nicht im Klartext in der Seite. */
   function saat(text) {
@@ -331,40 +360,45 @@ const DRAW = /*DRAW-START*/{"id":"01c171e439","demo":false,"title":"Wichteln 202
     const p = DRAW.people[index];
     const next = strom(saat(DRAW.id + "|" + p.n));
     const bytes = [];
-    for (let i = 0; i < p.z.length; i += 2) {
-      const b = parseInt(p.z.slice(i, i + 2), 16) ^ next();
-      bytes.push(b);
-    }
+    for (let i = 0; i < p.z.length; i += 2) bytes.push(parseInt(p.z.slice(i, i + 2), 16) ^ next());
     let ende = bytes.indexOf(0);
     if (ende < 0) ende = bytes.length;
     return new TextDecoder().decode(new Uint8Array(bytes.slice(0, ende)));
   }
 
-  /* Merken, wer hier schon gezogen hat (nur auf diesem Gerät). */
+  /* Merken, für wen auf diesem Gerät schon gezogen wurde.
+     liste: Namen (als Nummern) in der Reihenfolge des Ziehens; offen: gewählt, aber noch nicht gezogen. */
   const SCHLUESSEL = "wichteln:" + DRAW.id;
+  const gueltig = (i) => Number.isInteger(i) && i >= 0 && i < ANZAHL;
   let merkbar = true;
-  let stand = null;
+  let stand = { liste: [], offen: null };
   function lade() {
+    const leer = { liste: [], offen: null };
     try {
       const roh = localStorage.getItem(SCHLUESSEL);
-      if (!roh) return null;
+      if (!roh) return leer;
       const s = JSON.parse(roh);
-      if (Number.isInteger(s.ich) && s.ich >= 0 && s.ich < DRAW.people.length) return s;
+      if (Array.isArray(s.liste)) {
+        const liste = [...new Set(s.liste.filter(gueltig))];
+        const offen = gueltig(s.offen) && !liste.includes(s.offen) ? s.offen : null;
+        return { liste, offen };
+      }
+      /* älteres Format: ein Name pro Gerät */
+      if (gueltig(s.ich)) return s.gezogen ? { liste: [s.ich], offen: null } : { liste: [], offen: s.ich };
     } catch (e) { merkbar = false; }
-    return null;
+    return leer;
   }
   function merke() {
     try { localStorage.setItem(SCHLUESSEL, JSON.stringify(stand)); }
     catch (e) { merkbar = false; }
   }
   function vergiss() {
-    stand = null;
+    stand = { liste: [], offen: null };
     try { localStorage.removeItem(SCHLUESSEL); } catch (e) { /* egal */ }
   }
 
   /* Kopf */
   if (DRAW.title) $("titel").textContent = DRAW.title;
-  if (DRAW.intro) $("einleitung").textContent = DRAW.intro;
   $("probe").hidden = !DRAW.demo;
   $("probe-knoepfe").hidden = !DRAW.demo;
   for (const zeile of DRAW.info || []) {
@@ -378,78 +412,152 @@ const DRAW = /*DRAW-START*/{"id":"01c171e439","demo":false,"title":"Wichteln 202
 
   /* 1: Namensschilder */
   let kandidat = null;
-  DRAW.people.forEach((p, i) => {
+  const schilder = DRAW.people.map((p, i) => {
     const b = document.createElement("button");
     b.type = "button";
     b.className = "schild";
     b.id = "schild-" + i;
-    b.textContent = p.n;
+    const name = document.createElement("span");
+    name.className = "schild-name";
+    name.textContent = p.n;
+    const standText = document.createElement("span");
+    standText.className = "schild-stand";
+    standText.textContent = "schon gezogen";
+    standText.hidden = true;
+    b.append(name, standText);
     b.addEventListener("click", () => {
       kandidat = i;
-      $("sicher-frage").textContent = "Du bist " + p.n + "?";
-      $("knopf-ja").textContent = "Ja, ich bin " + p.n;
+      if (stand.liste.length === 0) {
+        $("sicher-frage").textContent = "Du bist " + p.n + "?";
+        $("sicher-text").textContent = "Jeder Name kann auf diesem Gerät nur einmal ziehen. Wer einen fremden Namen antippt, sieht einen fremden Zettel und verdirbt die Überraschung.";
+        $("knopf-ja").textContent = "Ja, ich bin " + p.n;
+      } else {
+        $("sicher-frage").textContent = "Du ziehst für " + p.n + "?";
+        $("sicher-text").textContent = "Zieh nur für jemanden, der nicht selbst ziehen kann, zum Beispiel für ein Kind ohne eigenes Handy. Jeder fremde Zettel, den du siehst, ist eine Überraschung weniger.";
+        $("knopf-ja").textContent = "Ja, für " + p.n + " ziehen";
+      }
       zeige("sicher");
     });
     $("schilder").appendChild(b);
+    return { knopf: b, standText };
   });
 
+  function zeigeWahl() {
+    const schonWas = stand.liste.length > 0;
+    $("wahl-frage").textContent = schonWas ? "Für wen ziehst du jetzt?" : "Wer bist du?";
+    const text = $("einleitung");
+    if (schonWas) {
+      text.textContent = "Tippe auf den Namen, für den du ziehst. Durchgestrichene Namen haben auf diesem Gerät schon gezogen.";
+    } else {
+      text.textContent = "";
+      const fett = document.createElement("strong");
+      fett.textContent = "deinen eigenen";
+      text.append("Tippe auf ", fett, " Namen. Danach ziehst du einen Zettel aus dem Hut.");
+    }
+    schilder.forEach((s, i) => {
+      const weg = stand.liste.includes(i);
+      s.knopf.disabled = weg;
+      s.standText.hidden = !weg;
+    });
+    $("wahl-zurueck").hidden = !schonWas;
+    kandidat = null;
+    zeige("wahl");
+  }
+
   /* 2: Bestätigen */
-  $("knopf-nein").addEventListener("click", () => { kandidat = null; zeige("wahl"); });
+  $("knopf-nein").addEventListener("click", zeigeWahl);
+  $("knopf-zurueck").addEventListener("click", () => zeigeZettel(null));
   $("knopf-ja").addEventListener("click", () => {
-    if (kandidat === null) return;
-    stand = { ich: kandidat, gezogen: false };
+    if (kandidat === null || stand.liste.includes(kandidat)) return;
+    stand.offen = kandidat;
     merke();
     zeigeHut();
   });
 
   /* 3: Ziehen */
   function zeigeHut() {
-    $("hut-anrede").textContent = DRAW.people[stand.ich].n + ", greif in den Hut.";
+    $("hut-anrede").textContent = DRAW.people[stand.offen].n + " zieht";
     $("knopf-ziehen").disabled = false;
     $("hut").classList.remove("schuetteln", "ziehen");
     zeige("hut");
   }
   $("knopf-ziehen").addEventListener("click", () => {
+    if (stand.offen === null) return;
     $("knopf-ziehen").disabled = true;
-    stand.gezogen = true;
+    const neu = stand.offen;
+    stand.liste.push(neu);
+    stand.offen = null;
     merke();
-    if (ruhig) { zeigeZettel(true); return; }
+    if (ruhig) { zeigeZettel(neu); return; }
     const hut = $("hut");
     hut.classList.add("schuetteln");
     setTimeout(() => { hut.classList.remove("schuetteln"); hut.classList.add("ziehen"); }, 900);
-    setTimeout(() => zeigeZettel(true), 1750);
+    setTimeout(() => zeigeZettel(neu), 1750);
   });
 
   /* 4: Zettel */
-  function klappe(auf) {
-    const z = $("zettel");
-    z.classList.toggle("offen", auf);
-    z.setAttribute("aria-expanded", auf ? "true" : "false");
-    $("zettel-auf").setAttribute("aria-hidden", auf ? "false" : "true");
-    $("zettel-name").textContent = auf ? lies(stand.ich) : "";
+  function baueZettel(i) {
+    const p = DRAW.people[i];
+    const eintrag = document.createElement("div");
+    eintrag.className = "eintrag";
+    const wer = document.createElement("h3");
+    wer.className = "eintrag-wer";
+    wer.textContent = p.n + " beschenkt";
+    const z = document.createElement("button");
+    z.type = "button";
+    z.className = "zettel";
+    z.id = "zettel-" + i;
+    z.setAttribute("aria-expanded", "false");
+    z.innerHTML =
+      '<span class="zettel-innen">' +
+      '<span class="zettel-seite zettel-zu"><span class="zettel-hinweis"></span><span class="zettel-klein">Tippen zum Aufklappen</span></span>' +
+      '<span class="zettel-seite zettel-auf" aria-hidden="true"><span class="zettel-name"></span><span class="zettel-klein">Tippen zum Zuklappen</span></span>' +
+      "</span>";
+    z.querySelector(".zettel-hinweis").textContent = "Zettel von " + p.n;
+    const klappe = (auf) => {
+      z.classList.toggle("offen", auf);
+      z.setAttribute("aria-expanded", auf ? "true" : "false");
+      z.querySelector(".zettel-auf").setAttribute("aria-hidden", auf ? "false" : "true");
+      z.querySelector(".zettel-name").textContent = auf ? lies(i) : "";
+    };
+    z.addEventListener("click", () => klappe(!z.classList.contains("offen")));
+    eintrag.append(wer, z);
+    return { eintrag, klappe };
   }
-  function zeigeZettel(gleichAuf) {
-    $("zettel-anrede").textContent = DRAW.people[stand.ich].n + ", du beschenkst";
+
+  function zeigeZettel(neu) {
+    const liste = $("zettel-liste");
+    liste.textContent = "";
+    liste.classList.toggle("mehrere", stand.liste.length > 1);
+    let neuerZettel = null;
+    /* neuester Zettel zuerst */
+    for (const i of [...stand.liste].reverse()) {
+      const z = baueZettel(i);
+      liste.appendChild(z.eintrag);
+      if (i === neu) neuerZettel = z;
+    }
+    const alle = stand.liste.length >= ANZAHL;
+    $("weiter-knoepfe").hidden = alle;
+    $("weiter-hinweis").hidden = alle;
     const hinweis = $("merkhinweis");
     if (merkbar) {
-      hinweis.textContent = "Dein Zettel bleibt auf diesem Gerät liegen. Öffnest du den Link wieder, findest du ihn hier. Nicht weitersagen.";
+      hinweis.textContent = "Die Zettel bleiben auf diesem Gerät liegen. Öffnest du den Link wieder, findest du sie hier. Nicht weitersagen.";
       hinweis.classList.remove("warnung");
     } else {
-      hinweis.textContent = "Dieses Gerät kann sich den Zettel nicht merken. Schreib dir den Namen jetzt auf.";
+      hinweis.textContent = "Dieses Gerät kann sich die Zettel nicht merken. Schreib dir die Namen jetzt auf.";
       hinweis.classList.add("warnung");
     }
-    klappe(false);
     zeige("zettel");
-    if (gleichAuf) setTimeout(() => klappe(true), ruhig ? 0 : 350);
+    if (neuerZettel) setTimeout(() => neuerZettel.klappe(true), ruhig ? 0 : 350);
   }
-  $("zettel").addEventListener("click", () => klappe(!$("zettel").classList.contains("offen")));
-  $("knopf-neu").addEventListener("click", () => { vergiss(); kandidat = null; zeige("wahl"); });
+  $("knopf-weiter").addEventListener("click", zeigeWahl);
+  $("knopf-neu").addEventListener("click", () => { vergiss(); zeigeWahl(); });
 
   /* Start */
   stand = lade();
-  if (stand && stand.gezogen) zeigeZettel(false);
-  else if (stand) zeigeHut();
-  else zeige("wahl");
+  if (stand.offen !== null) zeigeHut();
+  else if (stand.liste.length) zeigeZettel(null);
+  else zeigeWahl();
 })();
 </script>
 </html>
