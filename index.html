@@ -1,0 +1,455 @@
+<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow"><meta property="og:title" content="Wichteln 2026"><meta property="og:description" content="Greif in den Hut und zieh deinen Zettel."><style>:root{padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style><title>Wichteln 2026</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Figtree:wght@400;500;600&family=Fraunces:opsz,wght@9..144,500;9..144,640&display=swap">
+<style>
+/* Layout: eine schmale Spalte wie ein Tisch von oben: Titel, eine Bühne (Hut oder Zettel), eine Handlung. */
+:root {
+  --tanne: #14362c;
+  --tanne-tief: #0d261f;
+  --tanne-hell: #21503f;
+  --papier: #f4ecda;
+  --papier-falz: #dfd3b8;
+  --tinte: #1f2c27;
+  --siegel: #b3362c;
+  --siegel-tief: #8a2620;
+  --garn: #dcab4e;
+  --nebel: #b4c8bf;
+
+  --schrift-titel: "Fraunces", "Iowan Old Style", Georgia, serif;
+  --schrift-text: "Figtree", "Segoe UI", system-ui, sans-serif;
+  --schrift-hand: "Caveat", "Bradley Hand", "Segoe Print", cursive;
+
+  color-scheme: dark;
+}
+
+html, body { height: 100%; }
+body {
+  background: var(--tanne);
+  background-image: radial-gradient(120% 70% at 50% 0%, var(--tanne-hell) 0%, var(--tanne) 55%, var(--tanne-tief) 100%);
+  background-attachment: fixed;
+  color: var(--papier);
+  font-family: var(--schrift-text);
+  font-size: 1rem;
+  line-height: 1.5;
+  padding-block: 1.5rem 2rem;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  box-sizing: border-box;
+}
+*, *::before, *::after { box-sizing: inherit; }
+
+.tisch {
+  max-width: 26rem;
+  margin-inline: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.kopf { display: flex; flex-direction: column; gap: 0.5rem; align-items: flex-start; }
+.kopf h1 {
+  font-family: var(--schrift-titel);
+  font-weight: 640;
+  font-size: clamp(2.1rem, 9vw, 2.75rem);
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  margin: 0;
+  text-wrap: balance;
+}
+.garn { width: 4.5rem; height: 3px; background: var(--garn); border-radius: 2px; }
+.probe {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--tanne-tief);
+  background: var(--garn);
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+}
+
+.ansicht { display: flex; flex-direction: column; gap: 1.25rem; }
+.ansicht h2 {
+  font-family: var(--schrift-titel);
+  font-weight: 500;
+  font-size: 1.625rem;
+  line-height: 1.2;
+  margin: 0;
+  text-wrap: balance;
+  outline: none;
+}
+.ansicht p { margin: 0; color: var(--nebel); max-width: 34ch; }
+.ansicht p strong { color: var(--papier); font-weight: 600; }
+
+/* Namensschilder */
+.schilder { display: flex; flex-wrap: wrap; gap: 0.75rem; justify-content: center; }
+.schild {
+  flex: 0 1 calc(50% - 0.375rem);
+  min-width: 0;
+  min-height: 3.75rem;
+  padding: 0.5rem 0.75rem;
+  border: 0;
+  border-radius: 3px;
+  background: var(--papier);
+  color: var(--tinte);
+  font-family: var(--schrift-hand);
+  font-weight: 700;
+  font-size: 1.75rem;
+  line-height: 1.1;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+  box-shadow: 0 2px 0 var(--papier-falz), 0 8px 18px rgba(0, 0, 0, 0.28);
+  transition: transform 0.15s ease;
+}
+.schild:nth-child(3n + 1) { transform: rotate(-1.2deg); }
+.schild:nth-child(3n + 2) { transform: rotate(0.8deg); }
+.schild:nth-child(3n) { transform: rotate(-0.4deg); }
+.schild:hover, .schild:active { transform: rotate(0deg) translateY(-2px); }
+
+/* Knöpfe */
+.knoepfe { display: flex; flex-direction: column; gap: 0.75rem; }
+.knopf {
+  min-height: 3.25rem;
+  padding: 0.75rem 1.5rem;
+  border: 0;
+  border-radius: 999px;
+  font-family: var(--schrift-text);
+  font-size: 1.0625rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.knopf-haupt { background: var(--siegel); color: var(--papier); box-shadow: 0 3px 0 var(--siegel-tief); }
+.knopf-haupt:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--siegel-tief); }
+.knopf-haupt:disabled { opacity: 0.6; cursor: default; }
+.knopf-still { background: transparent; color: var(--papier); box-shadow: inset 0 0 0 1.5px var(--nebel); }
+
+:is(.schild, .knopf, .zettel):focus-visible { outline: 3px solid var(--garn); outline-offset: 3px; }
+
+/* Hut */
+.hut-buehne { display: flex; justify-content: center; padding-top: 3.5rem; }
+.hut { width: min(100%, 17rem); height: auto; overflow: visible; }
+.hut .los { transform-box: fill-box; transform-origin: 50% 100%; }
+.hut.schuetteln { animation: schuetteln 0.9s ease-in-out; }
+.hut.schuetteln .los { animation: rascheln 0.3s ease-in-out infinite alternate; }
+.hut.schuetteln .los:nth-of-type(even) { animation-direction: alternate-reverse; }
+.hut.ziehen .los-gezogen { animation: herausziehen 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) forwards; }
+@keyframes schuetteln {
+  0%, 100% { transform: rotate(0deg); }
+  20% { transform: rotate(-5deg) translateX(-4px); }
+  40% { transform: rotate(4deg) translateX(4px); }
+  60% { transform: rotate(-3deg) translateX(-3px); }
+  80% { transform: rotate(2deg) translateX(2px); }
+}
+@keyframes rascheln {
+  from { transform: translateY(0); }
+  to { transform: translateY(-6px); }
+}
+@keyframes herausziehen {
+  to { transform: translateY(-64px) rotate(-6deg) scale(1.25); }
+}
+
+/* Der Zettel */
+.zettel {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--tinte);
+  cursor: pointer;
+  perspective: 900px;
+  font-family: inherit;
+}
+.zettel-innen {
+  display: grid;
+  transform-style: preserve-3d;
+  transition: transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.zettel.offen .zettel-innen { transform: rotateX(180deg); }
+.zettel-seite {
+  grid-area: 1 / 1;
+  min-height: 11.5rem;
+  padding: 1.25rem 1rem;
+  border-radius: 3px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  text-align: center;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  background: var(--papier);
+  box-shadow: 0 2px 0 var(--papier-falz), 0 14px 30px rgba(0, 0, 0, 0.35);
+}
+.zettel-zu {
+  background-image: linear-gradient(to bottom, transparent calc(50% - 1px), var(--papier-falz) calc(50% - 1px), var(--papier-falz) calc(50% + 1px), transparent calc(50% + 1px));
+}
+.zettel-auf { transform: rotateX(180deg); }
+.zettel-hinweis { font-size: 0.9375rem; font-weight: 600; letter-spacing: 0.02em; }
+.zettel-klein { font-size: 0.875rem; color: #55635c; }
+.zettel-name {
+  font-family: var(--schrift-hand);
+  font-weight: 700;
+  font-size: clamp(2.75rem, 15vw, 4rem);
+  line-height: 1;
+  overflow-wrap: anywhere;
+  max-width: 100%;
+}
+
+.infos { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.4rem; }
+.infos li { display: flex; gap: 0.6rem; align-items: baseline; color: var(--papier); }
+.infos li::before { content: ""; flex: none; width: 0.45rem; height: 0.45rem; border-radius: 50%; background: var(--garn); transform: translateY(-0.1rem); }
+.fussnote { font-size: 0.875rem; }
+.warnung { color: var(--garn) !important; font-weight: 500; }
+
+@media (prefers-reduced-motion: reduce) {
+  .zettel-innen, .schild { transition: none; }
+  .hut.schuetteln, .hut.schuetteln .los, .hut.ziehen .los-gezogen { animation: none; }
+}
+</style>
+
+<main class="tisch">
+  <header class="kopf">
+    <span class="probe" id="probe" hidden>Beispiel mit erfundenen Namen</span>
+    <h1 id="titel">Wichteln 2026</h1>
+    <span class="garn" aria-hidden="true"></span>
+  </header>
+
+  <!-- 1: Wer bist du? -->
+  <section class="ansicht" id="ansicht-wahl" hidden>
+    <h2 tabindex="-1">Wer bist du?</h2>
+    <p id="einleitung">Tippe auf <strong>deinen eigenen</strong> Namen. Danach ziehst du einen Zettel aus dem Hut.</p>
+    <div class="schilder" id="schilder"></div>
+  </section>
+
+  <!-- 2: Sicher? -->
+  <section class="ansicht" id="ansicht-sicher" hidden>
+    <h2 tabindex="-1" id="sicher-frage">Du bist …?</h2>
+    <p>Die Wahl gilt auf diesem Gerät fest. Wer einen fremden Namen antippt, sieht einen fremden Zettel und verdirbt die Überraschung.</p>
+    <div class="knoepfe">
+      <button class="knopf knopf-haupt" id="knopf-ja" type="button">Ja, das bin ich</button>
+      <button class="knopf knopf-still" id="knopf-nein" type="button">Nein, zurück</button>
+    </div>
+  </section>
+
+  <!-- 3: Ziehen -->
+  <section class="ansicht" id="ansicht-hut" hidden>
+    <h2 tabindex="-1" id="hut-anrede">Greif in den Hut.</h2>
+    <p>Du ziehst genau einen Zettel. Dein eigener Name ist nicht dabei.</p>
+    <div class="hut-buehne" aria-hidden="true">
+      <svg class="hut" id="hut" viewBox="0 0 240 170" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <clipPath id="krone"><path d="M44 54 C48 120 62 150 120 154 C178 150 192 120 196 54 Z"/></clipPath>
+        </defs>
+        <path d="M44 54 C48 120 62 150 120 154 C178 150 192 120 196 54 Z" fill="#b3362c"/>
+        <rect x="30" y="66" width="180" height="17" fill="#dcab4e" clip-path="url(#krone)"/>
+        <ellipse cx="120" cy="50" rx="110" ry="22" fill="#8a2620"/>
+        <ellipse cx="120" cy="50" rx="78" ry="14" fill="#0d261f"/>
+        <rect class="los" x="62" y="14" width="30" height="42" rx="2" fill="#dfd3b8" transform="rotate(-16 77 56)"/>
+        <rect class="los" x="150" y="12" width="30" height="44" rx="2" fill="#dfd3b8" transform="rotate(14 165 56)"/>
+        <rect class="los" x="86" y="6" width="30" height="50" rx="2" fill="#f4ecda" transform="rotate(-6 101 56)"/>
+        <rect class="los" x="128" y="10" width="30" height="46" rx="2" fill="#f4ecda" transform="rotate(8 143 56)"/>
+        <g class="los los-gezogen">
+          <rect x="106" y="0" width="32" height="56" rx="2" fill="#f4ecda"/>
+          <rect x="106" y="27" width="32" height="2" fill="#dfd3b8"/>
+        </g>
+        <path d="M10 50 A110 22 0 0 0 230 50 L198 50 A78 14 0 0 1 42 50 Z" fill="#b3362c"/>
+      </svg>
+    </div>
+    <div class="knoepfe">
+      <button class="knopf knopf-haupt" id="knopf-ziehen" type="button">Zettel ziehen</button>
+    </div>
+  </section>
+
+  <!-- 4: Dein Zettel -->
+  <section class="ansicht" id="ansicht-zettel" hidden>
+    <h2 tabindex="-1" id="zettel-anrede">Du beschenkst</h2>
+    <button class="zettel" id="zettel" type="button" aria-expanded="false">
+      <span class="zettel-innen">
+        <span class="zettel-seite zettel-zu">
+          <span class="zettel-hinweis">Dein Zettel</span>
+          <span class="zettel-klein">Tippen zum Aufklappen</span>
+        </span>
+        <span class="zettel-seite zettel-auf" id="zettel-auf" aria-hidden="true">
+          <span class="zettel-name" id="zettel-name"></span>
+          <span class="zettel-klein">Tippen zum Zuklappen</span>
+        </span>
+      </span>
+    </button>
+    <ul class="infos" id="infos"></ul>
+    <p class="fussnote" id="merkhinweis">Dein Zettel bleibt auf diesem Gerät liegen. Öffnest du den Link wieder, findest du ihn hier. Nicht weitersagen.</p>
+    <div class="knoepfe" id="probe-knoepfe" hidden>
+      <button class="knopf knopf-still" id="knopf-neu" type="button">Beispiel von vorn beginnen</button>
+    </div>
+  </section>
+
+  <section class="ansicht" id="ansicht-leer" hidden>
+    <h2 tabindex="-1">Noch nicht ausgelost</h2>
+    <p>Hier liegen noch keine Zettel im Hut. Sobald die Namen feststehen, kannst du ziehen.</p>
+  </section>
+</main>
+
+<script>
+/* Die Auslosung. Dieser Block wird von auslosen.mjs geschrieben. */
+const DRAW = /*DRAW-START*/{"id":"01c171e439","demo":false,"title":"Wichteln 2026","info":["Budget: 20 €","Termin: 13.12.2026"],"people":[{"n":"Malia","z":"37abceb7a507a6af8cc8ad2ad9a676796738a04db9e42358a6c35bc5f5b35c9f34aead82fbaa1230e31c454d4faaac6f"},{"n":"Jessica","z":"94e41ae93b5b7b292cdffb8a65e4fff724559f17a878015a6b0e1ce1223dcbb75b9afbf72b273d208eb3dfc2ca850828"},{"n":"Daniel","z":"b556fb2075da451126f598a1b2f6624000a1bd66efad0c9c66a67ecb1721ea6fcc2112b0850176153bf7a31eb697f536"},{"n":"Halina","z":"9003c8964f27fb206af4bb5ade2801509fd9ec7166e6463abaabe165dba16b5dbbf7a8b7382e4e19de0b7664f360ff95"},{"n":"Loscha","z":"2f2dae2b12f6a483f25353bbe08f68095dca0e1420b67f862895c665fcb5c465a8e97573bd9796a5b62971e8f4972814"},{"n":"Hilde","z":"8a77a753d12e58e37f03e5a6c0df1a52838448dc396f1124290a8321102267946c779326e8a20167ccfaa6ddd33f4133"},{"n":"Mascha","z":"6c8d274582f1792d01b6b7024d325beb06fe38252c4a4920d832df93acd80060f0b4365fdaac6298b6705eefea46b331"},{"n":"Benny","z":"a70b230ec9b999c7e2599eba2373963505c3bc126cb233305fca3f2078066caacf549a2d7ae9f2b5c79398cdc6681343"},{"n":"Emilia","z":"80c77761dd6e01dceb4cccafc8fb7988259315b1902efb7a60c9804dc0cf16e8c5880f171e6e85d341327fc226209420"},{"n":"Liam","z":"6c613b21121e74cf2cd881a1b3d05cc127d692125c60c2876f824843641c11f5db11b3a73ddb3bb1fd9bd4f7a232f119"},{"n":"Lilli","z":"a908b72af6c98fb76c0392ecc27f1872fd03dad44b4d7b6f07ecfe5aeb2cdec78b74af3720a3a778e562d9335bef630c"},{"n":"Juri","z":"0459320b91c097d402e9fb3698a27b6da13b4fb10ad85f0067a88d3202f7595d87abe14f7087043cdf84dca4951b6b39"},{"n":"Sem","z":"2ab9711eb227e2355fcdaea18c5524214991ca964ec74ec1d7673a784c04b1497bee1d55c0a18449fe7654c94fea168e"},{"n":"Elias","z":"25eb61cd824bfb96fab3f1dc60dca1f1dadfab60f3f1d4c4055a9ea2f021941a7c6e89ed0c6f0c0880373bbd12005bb4"},{"n":"Willi","z":"7e8568b17020689ecfda40af28c309edcdfa6941ab50c9e6eefa31034aeac8348cf8ede468617effda4751e680b16f7d"},{"n":"Larissa","z":"2aaac4e99cf980afb4029ee53f4dc2703bfcd9a358b8d39e76b69d0e6e5f5a27d98007b2b1ef592af95b369ace083120"}]}/*DRAW-END*/;
+
+(function () {
+  "use strict";
+  const $ = (id) => document.getElementById(id);
+  const ansichten = ["wahl", "sicher", "hut", "zettel", "leer"];
+  const ruhig = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  function zeige(name) {
+    for (const a of ansichten) $("ansicht-" + a).hidden = a !== name;
+    const h = $("ansicht-" + name).querySelector("h2");
+    if (h) h.focus({ preventScroll: true });
+    window.scrollTo(0, 0);
+  }
+
+  if (!DRAW || !Array.isArray(DRAW.people) || DRAW.people.length < 2) {
+    zeige("leer");
+    return;
+  }
+
+  /* Zettel entschlüsseln: der Name steht nicht im Klartext in der Seite. */
+  function saat(text) {
+    let h = 2166136261;
+    for (const c of new TextEncoder().encode(text)) { h ^= c; h = Math.imul(h, 16777619); }
+    return h >>> 0;
+  }
+  function strom(start) {
+    let a = start;
+    return function () {
+      a = (a + 0x6D2B79F5) | 0;
+      let t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) & 255;
+    };
+  }
+  function lies(index) {
+    const p = DRAW.people[index];
+    const next = strom(saat(DRAW.id + "|" + p.n));
+    const bytes = [];
+    for (let i = 0; i < p.z.length; i += 2) {
+      const b = parseInt(p.z.slice(i, i + 2), 16) ^ next();
+      bytes.push(b);
+    }
+    let ende = bytes.indexOf(0);
+    if (ende < 0) ende = bytes.length;
+    return new TextDecoder().decode(new Uint8Array(bytes.slice(0, ende)));
+  }
+
+  /* Merken, wer hier schon gezogen hat (nur auf diesem Gerät). */
+  const SCHLUESSEL = "wichteln:" + DRAW.id;
+  let merkbar = true;
+  let stand = null;
+  function lade() {
+    try {
+      const roh = localStorage.getItem(SCHLUESSEL);
+      if (!roh) return null;
+      const s = JSON.parse(roh);
+      if (Number.isInteger(s.ich) && s.ich >= 0 && s.ich < DRAW.people.length) return s;
+    } catch (e) { merkbar = false; }
+    return null;
+  }
+  function merke() {
+    try { localStorage.setItem(SCHLUESSEL, JSON.stringify(stand)); }
+    catch (e) { merkbar = false; }
+  }
+  function vergiss() {
+    stand = null;
+    try { localStorage.removeItem(SCHLUESSEL); } catch (e) { /* egal */ }
+  }
+
+  /* Kopf */
+  if (DRAW.title) $("titel").textContent = DRAW.title;
+  if (DRAW.intro) $("einleitung").textContent = DRAW.intro;
+  $("probe").hidden = !DRAW.demo;
+  $("probe-knoepfe").hidden = !DRAW.demo;
+  for (const zeile of DRAW.info || []) {
+    const li = document.createElement("li");
+    const span = document.createElement("span");
+    span.textContent = zeile;
+    li.appendChild(span);
+    $("infos").appendChild(li);
+  }
+  $("infos").hidden = !(DRAW.info && DRAW.info.length);
+
+  /* 1: Namensschilder */
+  let kandidat = null;
+  DRAW.people.forEach((p, i) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "schild";
+    b.id = "schild-" + i;
+    b.textContent = p.n;
+    b.addEventListener("click", () => {
+      kandidat = i;
+      $("sicher-frage").textContent = "Du bist " + p.n + "?";
+      $("knopf-ja").textContent = "Ja, ich bin " + p.n;
+      zeige("sicher");
+    });
+    $("schilder").appendChild(b);
+  });
+
+  /* 2: Bestätigen */
+  $("knopf-nein").addEventListener("click", () => { kandidat = null; zeige("wahl"); });
+  $("knopf-ja").addEventListener("click", () => {
+    if (kandidat === null) return;
+    stand = { ich: kandidat, gezogen: false };
+    merke();
+    zeigeHut();
+  });
+
+  /* 3: Ziehen */
+  function zeigeHut() {
+    $("hut-anrede").textContent = DRAW.people[stand.ich].n + ", greif in den Hut.";
+    $("knopf-ziehen").disabled = false;
+    $("hut").classList.remove("schuetteln", "ziehen");
+    zeige("hut");
+  }
+  $("knopf-ziehen").addEventListener("click", () => {
+    $("knopf-ziehen").disabled = true;
+    stand.gezogen = true;
+    merke();
+    if (ruhig) { zeigeZettel(true); return; }
+    const hut = $("hut");
+    hut.classList.add("schuetteln");
+    setTimeout(() => { hut.classList.remove("schuetteln"); hut.classList.add("ziehen"); }, 900);
+    setTimeout(() => zeigeZettel(true), 1750);
+  });
+
+  /* 4: Zettel */
+  function klappe(auf) {
+    const z = $("zettel");
+    z.classList.toggle("offen", auf);
+    z.setAttribute("aria-expanded", auf ? "true" : "false");
+    $("zettel-auf").setAttribute("aria-hidden", auf ? "false" : "true");
+    $("zettel-name").textContent = auf ? lies(stand.ich) : "";
+  }
+  function zeigeZettel(gleichAuf) {
+    $("zettel-anrede").textContent = DRAW.people[stand.ich].n + ", du beschenkst";
+    const hinweis = $("merkhinweis");
+    if (merkbar) {
+      hinweis.textContent = "Dein Zettel bleibt auf diesem Gerät liegen. Öffnest du den Link wieder, findest du ihn hier. Nicht weitersagen.";
+      hinweis.classList.remove("warnung");
+    } else {
+      hinweis.textContent = "Dieses Gerät kann sich den Zettel nicht merken. Schreib dir den Namen jetzt auf.";
+      hinweis.classList.add("warnung");
+    }
+    klappe(false);
+    zeige("zettel");
+    if (gleichAuf) setTimeout(() => klappe(true), ruhig ? 0 : 350);
+  }
+  $("zettel").addEventListener("click", () => klappe(!$("zettel").classList.contains("offen")));
+  $("knopf-neu").addEventListener("click", () => { vergiss(); kandidat = null; zeige("wahl"); });
+
+  /* Start */
+  stand = lade();
+  if (stand && stand.gezogen) zeigeZettel(false);
+  else if (stand) zeigeHut();
+  else zeige("wahl");
+})();
+</script>
+</html>
